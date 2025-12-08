@@ -36,7 +36,6 @@ const AddBlog = () => {
          formData.append('image', image)
 
          const { data } = await axios.post('/api/blog/add', formData)
-         console.log("data =>",data)
          if (data?.success) {
             toast.success(data.message)
             setImage(false)

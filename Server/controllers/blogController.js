@@ -6,7 +6,6 @@ import main from "../configs/gemini.js"
 
 
 export const addBlog = async (req, resp) => {
-  // console.log("kit", imageKit)
   try {
     const { title, subTitle, description, category, isPublished } = JSON.parse(req.body.blog)
 
