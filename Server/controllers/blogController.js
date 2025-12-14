@@ -13,7 +13,7 @@ export const addBlog = async (req, resp) => {
 
     // check if all fields are present
     if (!title || !description || !category || !imageFile) {
-      resp.json({
+      resp.status(400).json({
         success: false,
         message: "Missing Required Fields"
       })
@@ -27,10 +27,12 @@ export const addBlog = async (req, resp) => {
       fileName: imageFile.originalname,
       folder: "/blogs"
     })
+     
+    console.log('res',response)
 
     // optimization through imagekit URL transformation
     const optimizeImageUrl = imageKit.helper.buildSrc({
-      urlEndpoint: response.url,
+      urlEndpoint: `https://ik.imagekit.io/${response.fileId}`,
       src: `/blogs/${imageFile.originalname}`,
       transformation: [
         { quality: 'auto' },     // Auto Compression
@@ -39,7 +41,10 @@ export const addBlog = async (req, resp) => {
       ]
     })
 
-    const image = optimizeImageUrl;
+    console.log("op url",optimizeImageUrl)
+
+    // const image = optimizeImageUrl;
+    const image = response.url;
 
     //   blog modal 
     await Blog.insertOne({ title, subTitle, description, category, image, isPublished })
@@ -50,7 +55,7 @@ export const addBlog = async (req, resp) => {
     })
 
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })
@@ -68,7 +73,7 @@ export const getAllBlogs = async (req, resp) => {
     })
 
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })
@@ -82,7 +87,7 @@ export const getBlogById = async (req, resp) => {
     const { blogId } = req.params
     const blog = await Blog.findById(blogId)
     if (!blog) {
-      resp.json({
+      resp.status(404).json({
         success: false,
         message: "Blog not found"
       })
@@ -92,7 +97,7 @@ export const getBlogById = async (req, resp) => {
       blog
     })
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })
@@ -109,13 +114,13 @@ export const deleteBlogById = async (req, resp) => {
     // Delete all Comments associated to this blog
     await Comment.deleteMany({ blog: id })
 
-    resp.json({
+    resp.status(200).json({
       success: true,
       message: "Blog deleted successfully"
     })
 
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })
@@ -130,12 +135,12 @@ export const togglePublish = async (req, resp) => {
     const blog = await Blog.findById(id)
     blog.isPublished = !blog.isPublished
     await blog.save()
-    resp.json({
+    resp.status(200).json({
       success: true,
       message: "Blog status updated"
     })
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })
@@ -149,12 +154,12 @@ export const addComment = async (req, resp) => {
     const { blog, name, content } = req.body
     //   comment Modal
     await Comment.create({ blog, name, content })
-    resp.json({
+    resp.status(200).json({
       success: true,
       message: "comment added for review"
     })
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })
@@ -168,12 +173,12 @@ export const getBlogComments = async(req, resp) => {
   try {
     const { blogId } = req.body
     const comments = await (await Comment.find({ blog: blogId, isApproved: true })).sort({ createdAt: -1 })
-    resp.json({
+    resp.status(200).json({
       success: true,
       message: comments
     })
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })
@@ -185,9 +190,11 @@ export const getBlogComments = async(req, resp) => {
 export const generateContent = async (req,resp)=>{
   try {
     const {prompt} = req.body;
-    const content = await main(prompt + 'Generate a blog content for this topic in simple text format')
-    resp.json({success: true,content})
+    console.log(prompt)
+    const content = await main( prompt + ' Generate a blog content for this topic in simple text format')
+    console.log("generated content:",content)
+    resp.status(200).json({success: true,content})
   } catch (error) {
-    resp.json({success:false,message:error.message})
+    resp.status(500).json({success:false,message:error.message})
   }
 }

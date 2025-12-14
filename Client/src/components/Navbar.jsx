@@ -1,10 +1,10 @@
 
 import { assets } from "../assets/assets"
 import { useAppContext } from "../context/AppContext"
+import { memo } from "react"
 
 const Navbar = () => {
     const {navigate,token} = useAppContext()
-
     return (
         <div className="flex justify-between items-center py-5 mx-8 sm:mx-20 xl:mx-32">
             <img onClick={() => navigate('/')} src={assets.logo} alt="logo" className="w-32 sm:w-44 cursor-pointer" />
@@ -16,4 +16,4 @@ const Navbar = () => {
     )
 }
 
-export default Navbar
+export default memo(Navbar)

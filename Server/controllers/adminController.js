@@ -20,7 +20,7 @@ export const adminLogin = async (req, resp) => {
 
 
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
 
@@ -33,13 +33,13 @@ export const adminLogin = async (req, resp) => {
 export const getAllBlogsAdmin = async (req, resp) => {
   try {
     const blogs = await Blog.find({}).sort({ createdAt: -1 })
-    resp.json({
+    resp.status(200).json({
       success: true,
       blogs
     })
 
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
 
@@ -53,13 +53,13 @@ export const getAllBlogsAdmin = async (req, resp) => {
 export const getAllComments = async (req, resp) => {
   try {
     const comments = await Comment.find({}).populate('blog').sort({ createdAt: -1 })
-    resp.json({
+    resp.status(200).json({
       success: true,
       comments
     })
 
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
 
@@ -80,13 +80,13 @@ export const getDashboard = async (req, resp) => {
       blogs,comments,drafts,recentBlogs
     }
 
-    resp.json({
+    resp.status(200).json({
       success: true,
       dashboardData
     })
 
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })
@@ -99,12 +99,12 @@ export const deleteCommentByID = async(req,resp) =>{
   try {
      const {id} = req.body
      await Comment.findByIdAndDelete(id)
-     resp.json({
+     resp.status(200).json({
       success: true,
       message:"comment deleted successfully"
     })
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })
@@ -118,12 +118,12 @@ export const approveCommentByID = async(req,resp) =>{
   try {
      const {id} = req.body
      await Comment.findByIdAndUpdate(id,{isApproved:true})
-     resp.json({
+     resp.status(200).json({
       success: true,
       message:"comment approved successfully"
     })
   } catch (error) {
-    resp.json({
+    resp.status(500).json({
       success: false,
       message: error.message
     })

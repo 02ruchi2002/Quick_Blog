@@ -52,9 +52,11 @@ const AddBlog = () => {
 
    const generateContent = async() => {
      if(!title) return toast.error('Please enter a title')
+      console.log("title",title)
       try {
          setLoading(true)
          const {data} = await axios.post('/api/blog/generate',{prompt:title})
+         console.log(data)
          if(data.success){
             quillRef.current.root.innerHTML = parse(data.content)
          }else{
